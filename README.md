@@ -2,12 +2,12 @@
 
 `ctf-mock`은 `sentinel` 개발과 통합 테스트를 위한 Django 기반 mock 서버입니다.
 
-실제 본 CTF 서버, scheduler, broker, admin alert 채널이 완성되기 전까지 `sentinel`이 바라볼 최소 API를 제공합니다.
+실제 본 CTF 서버, scheduler, broker, admin alert 채널이 완성되기 전까지 `sentinel`이 바라볼 최소 mocking API를 제공합니다.
 
 ## 목적
 
-- Django 기반 본 CTF 서버의 health 상태를 흉내 냅니다.
-- 문제 인스턴스의 health, timeout 상태를 흉내 냅니다.
+- Django 기반 본 CTF 서버의 health 상태를 mocking합니다.
+- 문제 인스턴스의 health, timeout 상태를 mocking합니다.
 - scheduler signal, admin alert 수신 endpoint를 제공합니다.
 - quota, budget, provider 장애 상황을 테스트할 수 있게 합니다.
 
