@@ -23,7 +23,7 @@
 ```text
 ctf-mock/
   config/       # Django 프로젝트 설정
-  mock_api/     # sentinel 연동용 mock API
+  mock_api/     # sentinel 연동용 mock API와 scenario 상태
   tests/        # API 및 시나리오 테스트
 ```
 
@@ -69,6 +69,23 @@ python manage.py check
 | POST | `/api/admin/alerts` | admin alert 수신 |
 | POST | `/api/scenarios` | 장애 scenario 활성화/비활성화 |
 
+장애 상태를 mocking하는 API는 sentinel이 실제 장애로 판단할 수 있도록 `503` 또는 `504`를 반환합니다.
+
+| Scenario | 영향 |
+| --- | --- |
+| `django_down` | `/health`가 Django 서버 장애를 반환 |
+| `django_db_down` | `/health`가 DB 연결 장애를 반환 |
+| `django_cache_down` | `/health`가 cache 장애를 반환 |
+| `django_api_timeout` | `/api/status`의 주요 API가 timeout 상태로 변경 |
+| `instance_unhealthy` | 문제 인스턴스 health가 unhealthy 상태로 변경 |
+| `instance_timeout` | 문제 인스턴스 health가 timeout 상태로 변경 |
+| `ttl_expired` | 문제 인스턴스 생성 시간이 TTL 초과 상태로 변경 |
+| `idle_timeout` | 문제 인스턴스 마지막 활동 시간이 idle timeout 초과 상태로 변경 |
+| `quota_exhausted` | broker 계정 quota가 소진된 상태로 변경 |
+| `budget_risk` | broker 계정 budget risk가 warning 상태로 변경 |
+| `provider_failure` | provider adapter 장애 상태로 변경 |
+| `broker_unavailable` | broker 조회 장애 상태로 변경 |
+
 `/api/scenarios` 요청 예시는 다음과 같습니다.
 
 ```json
@@ -77,6 +94,25 @@ python manage.py check
   "enabled": true
 }
 ```
+
+scenario를 초기화하려면 다음 요청을 보냅니다.
+
+```json
+{
+  "scenario": "reset"
+}
+```
+
+## Postman 테스트 순서
+
+1. `GET http://localhost:8000/health`
+2. `POST http://localhost:8000/api/scenarios`
+3. `GET http://localhost:8000/health`
+4. `GET http://localhost:8000/api/instances`
+5. `GET http://localhost:8000/api/instances/inst-001/health`
+6. `GET http://localhost:8000/api/broker/accounts`
+7. `POST http://localhost:8000/api/scheduler/signals`
+8. `POST http://localhost:8000/api/admin/alerts`
 
 ## 개발 원칙
 
