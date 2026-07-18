@@ -27,6 +27,22 @@ ctf-mock/
   tests/        # API 및 시나리오 테스트
 ```
 
+## 실행 방법
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+## 테스트
+
+```bash
+pytest
+python manage.py check
+```
+
 ## MVP 범위
 
 초기 MVP는 `sentinel` 연동 검증에 필요한 API만 구현합니다.

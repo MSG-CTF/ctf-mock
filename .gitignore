@@ -17,6 +17,7 @@ staticfiles/
 
 # Test / coverage
 .pytest_cache/
+.ruff_cache/
 .coverage
 htmlcov/
 
