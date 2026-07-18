@@ -56,6 +56,28 @@ python manage.py check
 - `POST /api/admin/alerts`
 - `POST /api/scenarios`
 
+## Mock API
+
+| Method | Path | 설명 |
+| --- | --- | --- |
+| GET | `/health` | 본 CTF Django 서버 health 상태 |
+| GET | `/api/status` | login, scoreboard, challenge, submission API 상태 |
+| GET | `/api/instances` | sentinel이 감시할 문제 인스턴스 목록 |
+| GET | `/api/instances/{instanceId}/health` | 문제 인스턴스 health 상태 |
+| GET | `/api/broker/accounts` | quota, budget, provider 상태 |
+| POST | `/api/scheduler/signals` | scheduler signal 수신 |
+| POST | `/api/admin/alerts` | admin alert 수신 |
+| POST | `/api/scenarios` | 장애 scenario 활성화/비활성화 |
+
+`/api/scenarios` 요청 예시는 다음과 같습니다.
+
+```json
+{
+  "scenario": "django_db_down",
+  "enabled": true
+}
+```
+
 ## 개발 원칙
 
 - 실제 운영 데이터를 저장하지 않습니다.
