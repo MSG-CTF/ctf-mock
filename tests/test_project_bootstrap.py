@@ -1,7 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
 
-
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
