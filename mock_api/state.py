@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-
 SUPPORTED_SCENARIOS = {
     "django_down",
     "django_db_down",
