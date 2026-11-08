@@ -35,6 +35,11 @@
 
 ## Development
 
+```bash
+python -m pip install -r requirements.txt
+python manage.py runserver
+```
+
 - [설치·실행 안내](README.reference.md)
 
 <p align="center"><sub><a href="https://github.com/MSG-CTF/msg-ctf.github.io/blob/67e93a09ce630910f98ae56fb118ca1317af78e0/docs/tech-icons.md">아이콘 출처</a></sub></p>
