@@ -1,121 +1,45 @@
-# ctf-mock
+<div align="center">
+<h1>MSG CTF · SLA / Mock API</h1>
+<p>Sentinel 개발 환경에서 정상 응답과 장애 상황을 재현하는 테스트 서버</p>
+<p><a href="https://msg-ctf.github.io/platform.html">플랫폼</a> · <a href="#development">개발 문서</a></p>
+</div>
 
-`ctf-mock`은 `sentinel` 개발과 통합 테스트를 위한 Django 기반 mock 서버입니다.
+<h2 align="center">Overview</h2>
 
-실제 본 CTF 서버, scheduler, broker, admin alert 채널이 완성되기 전까지 `sentinel`이 바라볼 최소 mocking API를 제공합니다.
+<table align="center">
+<tr><th width="260">응답 모사</th><th width="260">장애 재현</th><th width="260">연동 시험</th></tr>
+<tr><td align="center">서비스 health·인스턴스 상태</td><td align="center">시간 초과·자원 부족·제공자 장애</td><td align="center">스케줄러 신호·관리자 알림</td></tr>
+</table>
 
-## 목적
+<h2 align="center">Contributors</h2>
 
-- Django 기반 본 CTF 서버의 health 상태를 mocking합니다.
-- 문제 인스턴스의 health, timeout 상태를 mocking합니다.
-- scheduler signal, admin alert 수신 endpoint를 제공합니다.
-- quota, budget, provider 장애 상황을 테스트할 수 있게 합니다.
+<table align="center">
+<tr><th align="center" colspan="12"><a href="https://github.com/MSG-CTF/sentinel">SLA</a></th></tr>
+<tr>
+<td align="center" valign="top" colspan="12" width="780"><a href="https://github.com/minsoo0506"><img src="https://avatars.githubusercontent.com/u/68321360?v=4&amp;s=128" width="52" height="52" alt="minsoo0506"></a><br><a href="https://github.com/minsoo0506"><b>minsoo0506</b></a><br><sub>Django · 모사 API<br>장애 시나리오·검사 설정</sub></td>
+</tr>
+</table>
 
-## 기술 스택
+<details>
+<summary>기여 기록 · 관련 PR</summary>
 
-- Python
-- Django
-- Django REST Framework
-- SQLite
+| 기여자 | 기여 내용 | 관련 PR |
+| --- | --- | --- |
+| [minsoo0506](https://github.com/minsoo0506) | Django 기본 구조, Sentinel용 모사 API와 장애 시나리오·검사 설정 | [#1](https://github.com/MSG-CTF/ctf-mock/pull/1) · [#7](https://github.com/MSG-CTF/ctf-mock/pull/7) · [#8](https://github.com/MSG-CTF/ctf-mock/pull/8) |
 
-## 디렉토리 구조
+</details>
 
-```text
-ctf-mock/
-  config/       # Django 프로젝트 설정
-  mock_api/     # sentinel 연동용 mock API와 scenario 상태
-  tests/        # API 및 시나리오 테스트
-```
+<h2 align="center">Tech Stack</h2>
 
-## 실행 방법
+<p align="center"><img src="https://raw.githubusercontent.com/MSG-CTF/msg-ctf.github.io/67e93a09ce630910f98ae56fb118ca1317af78e0/assets/tech/djangorest.svg" width="44" height="44" alt="Django REST" title="Django REST"><br><sub>Django REST</sub><br><sub>Python · Django · SQLite · pytest</sub></p>
+
+## Development
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 python manage.py runserver
 ```
 
-## 테스트
+- [설치·실행 안내](README.reference.md)
 
-```bash
-pytest
-python manage.py check
-```
-
-## MVP 범위
-
-초기 MVP는 `sentinel` 연동 검증에 필요한 API만 구현합니다.
-
-- `GET /health`
-- `GET /api/status`
-- `GET /api/instances`
-- `GET /api/instances/{instanceId}/health`
-- `GET /api/broker/accounts`
-- `POST /api/scheduler/signals`
-- `POST /api/admin/alerts`
-- `POST /api/scenarios`
-
-## Mock API
-
-| Method | Path | 설명 |
-| --- | --- | --- |
-| GET | `/health` | 본 CTF Django 서버 health 상태 |
-| GET | `/api/status` | login, scoreboard, challenge, submission API 상태 |
-| GET | `/api/instances` | sentinel이 감시할 문제 인스턴스 목록 |
-| GET | `/api/instances/{instanceId}/health` | 문제 인스턴스 health 상태 |
-| GET | `/api/broker/accounts` | quota, budget, provider 상태 |
-| POST | `/api/scheduler/signals` | scheduler signal 수신 |
-| POST | `/api/admin/alerts` | admin alert 수신 |
-| POST | `/api/scenarios` | 장애 scenario 활성화/비활성화 |
-
-장애 상태를 mocking하는 API는 sentinel이 실제 장애로 판단할 수 있도록 `503` 또는 `504`를 반환합니다.
-
-| Scenario | 영향 |
-| --- | --- |
-| `django_down` | `/health`가 Django 서버 장애를 반환 |
-| `django_db_down` | `/health`가 DB 연결 장애를 반환 |
-| `django_cache_down` | `/health`가 cache 장애를 반환 |
-| `django_api_timeout` | `/api/status`의 주요 API가 timeout 상태로 변경 |
-| `instance_unhealthy` | 문제 인스턴스 health가 unhealthy 상태로 변경 |
-| `instance_timeout` | 문제 인스턴스 health가 timeout 상태로 변경 |
-| `ttl_expired` | 문제 인스턴스 생성 시간이 TTL 초과 상태로 변경 |
-| `idle_timeout` | 문제 인스턴스 마지막 활동 시간이 idle timeout 초과 상태로 변경 |
-| `quota_exhausted` | broker 계정 quota가 소진된 상태로 변경 |
-| `budget_risk` | broker 계정 budget risk가 warning 상태로 변경 |
-| `provider_failure` | provider adapter 장애 상태로 변경 |
-| `broker_unavailable` | broker 조회 장애 상태로 변경 |
-
-`/api/scenarios` 요청 예시는 다음과 같습니다.
-
-```json
-{
-  "scenario": "django_db_down",
-  "enabled": true
-}
-```
-
-scenario를 초기화하려면 다음 요청을 보냅니다.
-
-```json
-{
-  "scenario": "reset"
-}
-```
-
-## Postman 테스트 순서
-
-1. `GET http://localhost:8000/health`
-2. `POST http://localhost:8000/api/scenarios`
-3. `GET http://localhost:8000/health`
-4. `GET http://localhost:8000/api/instances`
-5. `GET http://localhost:8000/api/instances/inst-001/health`
-6. `GET http://localhost:8000/api/broker/accounts`
-7. `POST http://localhost:8000/api/scheduler/signals`
-8. `POST http://localhost:8000/api/admin/alerts`
-
-## 개발 원칙
-
-- 실제 운영 데이터를 저장하지 않습니다.
-- secret, token, flag, raw request body를 로그에 남기지 않습니다.
-- 브루마블형 CTF 전체 기능이 아니라 `sentinel` 테스트에 필요한 최소 기능만 구현합니다.
+<p align="center"><sub><a href="https://github.com/MSG-CTF/msg-ctf.github.io/blob/67e93a09ce630910f98ae56fb118ca1317af78e0/docs/tech-icons.md">아이콘 출처</a></sub></p>
